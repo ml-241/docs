@@ -1,0 +1,61 @@
+navigation:
+  - section: Getting Started
+    contents:
+      - page: Overview
+        path: ./pages/getting-started/overview.mdx
+      - page: Get to OpenAPI
+        path: ./pages/getting-started/get-to-openapi.mdx
+      - page: Philosophy
+        path: ./pages/getting-started/philosophy.mdx
+      - page: Customer Showcase
+        path: ./pages/getting-started/customer-showcase.mdx
+      - section: Get to OpenAPI
+        contents:
+          - page: Handwrite it
+            path: ./pages/getting-started/get-to-openapi/handwrite-it.mdx
+          - section: Generate it
+            contents:
+              - page: FastAPI
+                path: ./pages/getting-started/get-to-openapi/generate-it/fastapi.mdx
+              - page: NestJS
+                path: ./pages/getting-started/get-to-openapi/generate-it/nestjs.mdx
+              - page: Swaggo
+                path: ./pages/getting-started/get-to-openapi/generate-it/swaggo.mdx
+              - page: Request a new framework
+                path: ./pages/getting-started/get-to-openapi/generate-it/request-new-framework.mdx
+      - page: Overlay customizations
+        path: ./pages/getting-started/overlay-customizations.mdx
+  - section: Security Schemes
+    contents:
+      - page: Overview
+        path: ./pages/security-schemes/overview.mdx
+      - page: Overriding the security scheme
+        path: ./pages/security-schemes/overriding-security-scheme.mdx
+      - page: Multiple security schemes
+        path: ./pages/security-schemes/multiple-security-schemes.mdx
+  - section: Servers
+    contents:
+      - page: Overview
+        path: ./pages/servers/overview.mdx
+      - page: Overriding the servers
+        path: ./pages/servers/overriding-servers.mdx
+      - page: Naming your servers
+        path: ./pages/servers/naming-your-servers.mdx
+      - page: Multiple server URLs
+        path: ./pages/servers/multiple-server-urls.mdx
+  - section: Schemas
+    contents:
+      - page: Objects
+        path: ./pages/schemas/objects.mdx
+      - page: AllOf
+        path: ./pages/schemas/allof.mdx
+      - page: OneOf
+        path: ./pages/schemas/oneof.mdx
+      - page: AnyOf
+        path: ./pages/schemas/anyof.mdx
+      - page: Enums
+        path: ./pages/schemas/enums.mdx
+      - page: Override the type
+        path: ./pages/schemas/override-type.mdx
+      - page: Inlined schemas
+        path: ./pages/schemas/inlined-schemas.mdx

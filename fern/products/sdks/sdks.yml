@@ -1,0 +1,127 @@
+navigation:
+  - section: Fern SDKS
+    contents:
+      - page: Overview
+        path: ./pages/overview.mdx
+      - page: SDK Customer Showcase
+        path: ./pages/sdk-customer-showcase.mdx
+      - section: Typescript
+        contents:
+          - page: Quickstart
+            path: ./pages/typescript/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/typescript/philosophy.mdx
+          - page: Configuration
+            path: ./pages/typescript/configuration.mdx
+          - page: Changelog
+            path: ./pages/typescript/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/typescript/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/typescript/customer-showcase.mdx
+      - section: Python
+        contents:
+          - page: Quickstart
+            path: ./pages/python/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/python/philosophy.mdx
+          - page: Configuration
+            path: ./pages/python/configuration.mdx
+          - page: Changelog
+            path: ./pages/python/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/python/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/python/customer-showcase.mdx
+      - section: Go
+        contents:
+          - page: Quickstart
+            path: ./pages/go/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/go/philosophy.mdx
+          - page: Configuration
+            path: ./pages/go/configuration.mdx
+          - page: Changelog
+            path: ./pages/go/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/go/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/go/customer-showcase.mdx
+      - section: Java
+        contents:
+          - page: Quickstart
+            path: ./pages/java/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/java/philosophy.mdx
+          - page: Configuration
+            path: ./pages/java/configuration.mdx
+          - page: Changelog
+            path: ./pages/java/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/java/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/java/customer-showcase.mdx
+      - section: .NET
+        contents:
+          - page: Quickstart
+            path: ./pages/dotnet/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/dotnet/philosophy.mdx
+          - page: Configuration
+            path: ./pages/dotnet/configuration.mdx
+          - page: Changelog
+            path: ./pages/dotnet/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/dotnet/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/dotnet/customer-showcase.mdx
+      - section: PHP
+        contents:
+          - page: Quickstart
+            path: ./pages/php/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/php/philosophy.mdx
+          - page: Configuration
+            path: ./pages/php/configuration.mdx
+          - page: Changelog
+            path: ./pages/php/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/php/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/php/customer-showcase.mdx
+      - section: Ruby
+        contents:
+          - page: Quickstart
+            path: ./pages/ruby/quickstart.mdx
+          - page: Philosophy
+            path: ./pages/ruby/philosophy.mdx
+          - page: Configuration
+            path: ./pages/ruby/configuration.mdx
+          - page: Changelog
+            path: ./pages/ruby/changelog.mdx
+          - page: Publishing to NPM
+            path: ./pages/ruby/publishing-to-npm.mdx
+          - page: Customer Showcase
+            path: ./pages/ruby/customer-showcase.mdx
+  - section: Enterprise
+    contents:
+      - page: On-Premise SDKs
+        path: ./pages/enterprise/on-premise-sdks.mdx
+  - section: Guides
+    contents:
+      - page: Customize Method Names
+        path: ./pages/guides/customize-method-names.mdx
+      - page: Setup local SDK previews
+        path: ./pages/guides/setup-local-sdk-previews.mdx
+      - page: Configure Global Headers
+        path: ./pages/guides/configure-global-headers.mdx
+      - page: Configure Auto-Pagination
+        path: ./pages/guides/configure-auto-pagination.mdx
+      - page: Configure Auth Schemes
+        path: ./pages/guides/configure-auth-schemes.mdx
+      - page: Configure GitHub Publishing
+        path: ./pages/guides/configure-github-publishing.mdx
+      - page: Configure Idempotency
+        path: ./pages/guides/configure-idempotency.mdx
+      - page: Filter Your Endpoints (Audiences)
+        path: ./pages/guides/filter-your-endpoints-audiences.mdx

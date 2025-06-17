@@ -1,0 +1,9 @@
+packages:
+  - "packages/**"
+  - "generators/**"
+  - "!**/dist"
+  - "!**/lib"
+  - "!**/generated"
+  - "!packages/cli/cli/dist/local"
+  - "!packages/cli/cli/dist/dev"
+  - "!packages/cli/cli/dist/prod"

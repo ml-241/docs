@@ -1,0 +1,55 @@
+navigation:
+  - section: Getting Started
+    contents:
+      - page: Overview
+        path: ./pages/getting-started/overview.mdx
+      - page: Quickstart
+        path: ./pages/getting-started/quickstart.mdx
+      - page: Philosophy
+        path: ./pages/getting-started/philosophy.mdx
+      - page: Customer Showcase
+        path: ./pages/getting-started/customer-showcase.mdx
+  - section: Global Settings
+    contents:
+      - page: Authentication
+        path: ./pages/global-settings/authentication.mdx
+      - page: Global Headers
+        path: ./pages/global-settings/global-headers.mdx
+      - page: Environments
+        path: ./pages/global-settings/environments.mdx
+      - page: API Versions
+        path: ./pages/global-settings/api-versions.mdx
+  - section: Defining your API
+    contents:
+      - page: Types
+        path: ./pages/defining-your-api/types.mdx
+      - page: Imports
+        path: ./pages/defining-your-api/imports.mdx
+      - page: Endpoints
+        path: ./pages/defining-your-api/endpoints.mdx
+      - page: Webhooks
+        path: ./pages/defining-your-api/webhooks.mdx
+      - page: WebSockets
+        path: ./pages/defining-your-api/websockets.mdx
+      - page: Examples
+        path: ./pages/defining-your-api/examples.mdx
+      - page: Errors
+        path: ./pages/defining-your-api/errors.mdx
+      - page: Doc
+        path: ./pages/defining-your-api/doc.mdx
+      - page: Availability
+        path: ./pages/defining-your-api/availability.mdx
+      - page: Audiences
+        path: ./pages/defining-your-api/audiences.mdx
+  - section: Guides
+    contents:
+      - page: Validate your Fern Definition
+        path: ./pages/guides/validate-your-fern-definition.mdx
+      - page: Define multiple APIs
+        path: ./pages/guides/define-multiple-apis.mdx
+      - page: Export to OpenAPI
+        path: ./pages/guides/export-to-openapi.mdx
+      - page: Depending on other APIs
+        path: ./pages/guides/depending-on-other-apis.mdx
+      - page: Creating namespaces
+        path: ./pages/guides/creating-namespaces.mdx
