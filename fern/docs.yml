@@ -34,27 +34,27 @@ products:
     image: ./images/product-switcher/ask-fern.png
     slug: ask-fern
     subtitle: Let users find answers in your documentation instantly
-  - display-name: OpenAPI Definition
+  - display-name: OpenAPI
     path: ./products/openapi-def/openapi-def.yml
     icon: fa-regular fa-book
     image: ./images/product-switcher/openapi-def.png
     slug: openapi-def
-  - display-name: Fern Definition
+  - display-name: Fern
     path: ./products/fern-def/fern-def.yml
     icon: fa-regular fa-seedling
     image: ./images/product-switcher/fern-def.png
     slug: fern-def
-  - display-name: AsyncAPI Definition
+  - display-name: AsyncAPI
     path: ./products/asyncapi-def/asyncapi-def.yml
     icon: fa-regular fa-bolt
     image: ./images/product-switcher/asyncapi-def.png
     slug: asyncapi-def
-  - display-name: OpenRPC Definition
+  - display-name: OpenRPC
     path: ./products/openrpc-def/openrpc-def.yml
     icon: fa-regular fa-code
     image: ./images/product-switcher/openrpc-def.png
     slug: openrpc-def
-  - display-name: gRPC Definition
+  - display-name: gRPC
     path: ./products/grpc-def/grpc-def.yml
     icon: fa-regular fa-plug
     image: ./images/product-switcher/grpc-def.png
@@ -108,6 +108,9 @@ navbar-links:
   - type: minimal
     text: Slack community
     url: https://buildwithfern.com/slack
+  - type: secondary
+    text: Log in
+    url: https://dashboard.buildwithfern.com/
   - type: filled
     text: Book a demo
     url: https://buildwithfern.com/contact

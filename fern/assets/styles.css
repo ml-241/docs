@@ -63,11 +63,16 @@ div:has(> .fern-product-selector-radio-group):before {
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   padding: 1.25rem;
+  max-height: 232px;
   
   > a {
     max-width: 320px;
     margin: -0.75rem;
     position: relative;
+
+    .fern-selection-item{
+      border-radius: 1rem;
+    }
   }
 
   > a[href="/learn/home"] {
