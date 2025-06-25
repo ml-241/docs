@@ -55,12 +55,3 @@ Below are links to slack conversations about what docs need to be included as pa
 - https://buildwithfern.slack.com/archives/C06UVH9HKRC/p1750709442534809?thread_ts=1750703512.877769&cid=C06UVH9HKRCj
 - https://buildwithfern.slack.com/archives/C08T7EHDHMW/p1750793551604399?thread_ts=1750792603.757169&cid=C08T7EHDHMW
 
-If you're working on any of these documentation items:
-
-1. **Check the current status** in the [DOCSTODO.md](./DOCSTODO.md) file
-2. **Update the relevant Slack threads** with your progress
-3. **Follow the local development setup** above to test your changes
-4. **Submit a pull request** with your documentation improvements
-
-For more detailed information about specific documentation requirements, please refer to the individual Slack threads linked above or contact the documentation team.
-
