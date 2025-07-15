@@ -13,8 +13,7 @@ navigation:
             path: ./overview/typescript/design.mdx
           - page: Configuration
             path: ./overview/typescript/configuration.mdx
-          - page: Changelog
-            path: ./overview/typescript/changelog.mdx
+          - changelog: ./overview/typescript/changelog
           - page: Publishing to NPM
             path: ./overview/typescript/publishing-to-npm.mdx
           - page: Adding custom code
@@ -29,8 +28,7 @@ navigation:
             path: ./overview/python/design.mdx
           - page: Configuration
             path: ./overview/python/configuration.mdx
-          - page: Changelog
-            path: ./overview/python/changelog.mdx
+          - changelog: ./overview/python/changelog
           - page: Publishing to PyPI
             path: ./overview/python/publishing-to-pypi.mdx
           - page: Adding custom code
@@ -45,8 +43,7 @@ navigation:
             path: ./overview/go/design.mdx
           - page: Configuration
             path: ./overview/go/configuration.mdx
-          - page: Changelog
-            path: ./overview/go/changelog.mdx
+          - changelog: ./overview/go/changelog
           - page: Publishing as a Go Module
             path: ./overview/go/publishing-to-go-package-manager.mdx
           - page: Adding custom code
@@ -61,8 +58,7 @@ navigation:
             path: ./overview/java/design.mdx
           - page: Configuration
             path: ./overview/java/configuration.mdx
-          - page: Changelog
-            path: ./overview/java/changelog.mdx
+          - changelog: ./overview/java/changelog
           - page: Publishing to Maven Central
             path: ./overview/java/publishing-to-maven-central.mdx
           - page: Adding custom code
@@ -77,8 +73,7 @@ navigation:
             path: ./overview/dotnet/design.mdx
           - page: Configuration
             path: ./overview/dotnet/configuration.mdx
-          - page: Changelog
-            path: ./overview/dotnet/changelog.mdx
+          - changelog: ./overview/dotnet/changelog
           - page: Publishing to Nuget
             path: ./overview/dotnet/publishing-to-nuget.mdx
           - page: Adding custom code
@@ -93,8 +88,7 @@ navigation:
             path: ./overview/php/design.mdx
           - page: Configuration
             path: ./overview/php/configuration.mdx
-          - page: Changelog
-            path: ./overview/php/changelog.mdx
+          - changelog: ./overview/php/changelog
           - page: Publishing to Packagist
             path: ./overview/php/publishing-to-packagist.mdx
           - page: Adding custom code
@@ -109,8 +103,7 @@ navigation:
             path: ./overview/ruby/design.mdx
           - page: Configuration
             path: ./overview/ruby/configuration.mdx
-          - page: Changelog
-            path: ./overview/ruby/changelog.mdx
+          - changelog: ./overview/ruby/changelog
           - page: Publishing to RubyGems
             path: ./overview/ruby/publishing-to-rubygems.mdx
           - page: Adding custom code
