@@ -1,8 +1,757 @@
 ---
-title: generators.yml
+title: generators.yml Configuration Schema
 description: Reference for the generators.yml configuration
 ---
 
-Stay up to date with the latest changes and updates to the Fern Typescript SDK.
+The `generators.yml` file configures how Fern generates SDKs from your API
+specification, including which languages to generate, where to publish them, and
+how to customize each SDK. This document describes the complete configuration
+schema for `generators.yml`.
 
-<Warning>This page is a WIP, please refer to our previous [documentation](https://buildwithfern.com/learn/sdks/reference/configuration).</Warning>
+```yaml
+# Example generators.yml configuration
+api:
+  specs:
+    - openapi: "./openapi.yml"
+      namespace: "v1"
+      settings:
+        title-as-schema-name: true
+        inline-path-parameters: false
+        respect-forward-compatible-enums: true
+
+whitelabel:
+  github:
+    username: "my-org"
+    email: "sdk@mycompany.com"
+    token: "ghp_xxxxxxxxxxxx"
+
+metadata:
+  description: "Official SDK for MyAPI"
+  authors:
+    - name: "SDK Team"
+      email: "sdk@mycompany.com"
+
+readme:
+  introduction: "Welcome to the MyAPI SDK"
+  apiReferenceLink: "https://docs.myapi.com"
+  defaultEndpoint:
+    method: "GET"
+    path: "/users"
+  features:
+    authentication:
+      - "POST /auth/login"
+      - "GET /auth/profile"
+    users:
+      - "GET /users"
+      - "POST /users"
+
+default-group: "production"
+
+groups:
+  production:
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.9.0
+      - name: fernapi/fern-python-sdk
+        version: 2.0.0
+```
+
+## auth-schemes
+Configures authentication methods for your API.
+
+<ParamField path="auth-schemes" type="map<string, AuthSchemeDeclarationSchema>" required={false}>
+</ParamField>
+
+## api
+
+<ParamField path="api" type="APIConfigurationSchema">
+ Defines the API specification (OpenAPI, AsyncAPI, etc.) and how to parse it.
+</ParamField>
+
+```yaml
+api:
+  specs:
+    - openapi: "./openapi.yml"
+      namespace: "v1"
+      settings:
+        title-as-schema-name: true
+        inline-path-parameters: false
+```
+
+### General Configuration Options
+
+```yaml
+api:
+  specs:
+    - openapi: "./openapi.yml"
+      namespace: "v1"
+      settings:
+        title-as-schema-name: true
+        inline-path-parameters: false
+    - asyncapi: "./events.yml"
+      namespace: "events"
+  headers:
+    Authorization: "Bearer ${API_TOKEN}"
+  environments:
+    production: "https://api.prod.com"
+    staging: "https://api.staging.com"
+```
+
+<ParamField path="api.specs" type="list<SpecSchema> | ConjureSchema" required={true}>
+  List of API specifications or Conjure configuration.
+</ParamField>
+
+<ParamField path="api.auth" type="ApiAuthSchema">
+  Authentication configuration for the API.
+</ParamField>
+
+<ParamField path="api.headers" type="map<string, string>">
+  Default headers to include with API requests.
+</ParamField>
+
+<ParamField path="api.environments" type="EnvironmentsSchema">
+  Environment configurations for different deployment targets.
+</ParamField>
+
+### Specification Types
+
+#### OpenAPI
+
+```yaml
+api:
+  specs:
+    - openapi: "./openapi.yml"
+      origin: "https://api.example.com/openapi.json"
+      overrides: "./openapi-overrides.yml"
+      namespace: "v1"
+      settings:
+        title-as-schema-name: true
+        inline-path-parameters: false
+        prefer-undiscriminated-unions-with-literals: true
+        filter:
+          endpoints: ["POST /users", "GET /users/{id}"]
+        example-generation:
+          request:
+            max-depth: 2
+```
+
+<ParamField path="specs[].openapi" type="string" required={true}>
+  Path to the OpenAPI specification file.
+</ParamField>
+
+<ParamField path="specs[].origin" type="string">
+  URL of the API definition origin for polling updates.
+</ParamField>
+
+<ParamField path="specs[].overrides" type="string">
+  Path to OpenAPI overrides file.
+</ParamField>
+
+<ParamField path="specs[].namespace" type="string">
+  Namespace for the specification.
+</ParamField>
+
+<ParamField path="specs[].settings" type="OpenAPISettingsSchema">
+  OpenAPI-specific generation settings.
+</ParamField>
+
+<ParamField path="settings.title-as-schema-name" type="boolean" default="true">
+  Whether to use the titles of schemas within an OpenAPI definition as the names of types within Fern.
+</ParamField>
+
+<ParamField path="settings.inline-path-parameters" type="boolean" default="false">
+  Whether to include path parameters within the generated in-lined request.
+</ParamField>
+
+<ParamField path="settings.prefer-undiscriminated-unions-with-literals" type="boolean" default="false">
+  Whether to prefer undiscriminated unions with literals.
+</ParamField>
+
+<ParamField path="settings.only-include-referenced-schemas" type="boolean" default="false">
+  Whether to only include schemas referenced by endpoints in the generated SDK (tree-shaking).
+</ParamField>
+
+<ParamField path="settings.respect-nullable-schemas" type="boolean" default="false">
+  Preserves nullable schemas in API definition settings. When false, nullable schemas are treated as optional.
+</ParamField>
+
+<ParamField path="settings.object-query-parameters" type="boolean">
+  Enables parsing deep object query parameters.
+</ParamField>
+
+<ParamField path="settings.respect-readonly-schemas" type="boolean">
+  Enables exploring readonly schemas in OpenAPI specifications.
+</ParamField>
+
+<ParamField path="settings.respect-forward-compatible-enums" type="boolean" default="false">
+  Enables respecting forward compatible enums in OpenAPI specifications.
+</ParamField>
+
+<ParamField path="settings.use-bytes-for-binary-response" type="boolean">
+  Enables using the `bytes` type for binary responses. Defaults to file stream.
+</ParamField>
+
+<ParamField path="settings.default-form-parameter-encoding" type="FormParameterEncoding" default="json">
+  The default encoding of form parameters. Options: `form`, `json`.
+</ParamField>
+
+<ParamField path="settings.additional-properties-defaults-to" type="boolean" default="false">
+  Configure what `additionalProperties` should default to when not explicitly defined on a schema.
+</ParamField>
+
+<ParamField path="settings.type-dates-as-strings" type="boolean" default="true">
+  If true, convert strings with format date to strings. If false, convert to dates.
+</ParamField>
+
+<ParamField path="settings.preserve-single-schema-oneof" type="boolean" default="false">
+  If true, preserve oneOf structures with a single schema. If false, unwrap them.
+</ParamField>
+
+<ParamField path="settings.filter.endpoints" type="list<string>">
+  Endpoints to include in the generated SDK (e.g., "POST /users").
+</ParamField>
+
+<ParamField path="settings.example-generation.request.max-depth" type="integer">
+  Controls the maximum depth for which optional properties will have examples generated. A depth of 0 means no optional properties will have examples.
+</ParamField>
+
+<ParamField path="settings.example-generation.response.max-depth" type="integer">
+  Controls the maximum depth for which optional properties will have examples generated in responses.
+</ParamField>
+
+#### AsyncAPI
+
+```yaml
+api:
+  specs:
+    - asyncapi: "./asyncapi.yml"
+      origin: "https://api.example.com/asyncapi.json"
+      overrides: "./asyncapi-overrides.yml"
+      namespace: "events"
+      settings:
+        message-naming: "v2"
+        title-as-schema-name: false
+        respect-nullable-schemas: true
+```
+
+<ParamField path="specs[].asyncapi" type="string" required={true}>
+  Path to the AsyncAPI specification file.
+</ParamField>
+
+<ParamField path="specs[].origin" type="string">
+  URL of the API definition origin for polling updates.
+</ParamField>
+
+<ParamField path="specs[].overrides" type="string">
+  Path to AsyncAPI overrides file.
+</ParamField>
+
+<ParamField path="specs[].namespace" type="string">
+  Namespace for the specification.
+</ParamField>
+
+<ParamField path="specs[].settings" type="AsyncAPISettingsSchema">
+  AsyncAPI-specific generation settings.
+</ParamField>
+
+<ParamField path="settings.message-naming" type="MessageNamingSettingsSchema" default="v1">
+  What version of message naming to use for AsyncAPI messages. Options: `v1`, `v2`.
+</ParamField>
+
+<ParamField path="settings.title-as-schema-name" type="boolean" default="true">
+  Whether to use the titles of schemas within an AsyncAPI definition as the names of types within Fern.
+</ParamField>
+
+<ParamField path="settings.respect-nullable-schemas" type="boolean" default="false">
+  Preserves nullable schemas in API definition settings. When false, nullable schemas are treated as optional.
+</ParamField>
+
+#### Protocol Buffers
+
+```yaml
+api:
+  specs:
+    - proto:
+        root: "./proto"
+        target: "proto/service/v1/service.proto"
+        local-generation: true
+```
+
+<ParamField path="specs[].proto" type="ProtobufDefinitionSchema" required={true}>
+  Protocol Buffers configuration.
+</ParamField>
+
+<ParamField path="specs[].proto.target" type="string">
+  Path to the target `.proto` file (e.g., `proto/user/v1/user.proto`).
+</ParamField>
+
+<ParamField path="specs[].proto.root" type="string" required={true}>
+  Path to the `.proto` directory root (e.g., `proto`).
+</ParamField>
+
+<ParamField path="specs[].proto.overrides" type="string">
+  Path to the overrides configuration.
+</ParamField>
+
+<ParamField path="specs[].proto.local-generation" type="boolean">
+  Whether to compile `.proto` files locally. Defaults to remote generation.
+</ParamField>
+
+#### OpenRPC
+
+<ParamField path="specs[].openrpc" type="string" required={true}>
+  Path to the OpenRPC specification file.
+</ParamField>
+
+<ParamField path="specs[].overrides" type="string">
+  Path to OpenRPC overrides file.
+</ParamField>
+
+<ParamField path="specs[].namespace" type="string">
+  Namespace for the specification.
+</ParamField>
+
+#### Conjure
+
+```yaml
+api:
+  specs:
+    conjure: "./conjure-api.yml"
+```
+
+<ParamField path="specs.conjure" type="string">
+  Path to Conjure specification file.
+</ParamField>
+
+## whitelabel
+Branding/publishing configuration (like GitHub credentials for publishing).
+
+```yaml
+whitelabel:
+  github:
+    username: "my-github-username"
+    email: "my-email@example.com"
+    token: "ghp_xxxxxxxxxxxx"
+```
+
+<ParamField path="whitelabel" type="WhitelabelConfigurationSchema" required={false}>
+</ParamField>
+
+<ParamField path="whitelabel.github" type="WhitelabelGithubConfigurationSchema" required={false}>
+</ParamField>
+
+<ParamField path="whitelabel.github.username" type="string" required={true}>
+</ParamField>
+
+<ParamField path="whitelabel.github.email" type="string" required={true}>
+</ParamField>
+
+<ParamField path="whitelabel.github.token" type="string" required={true}>
+</ParamField>
+
+## metadata
+Package metadata like description and authors that gets included in generated SDKs.
+
+```yaml
+metadata:
+  description: "My API SDK"
+  authors:
+    - name: "John Doe"
+      email: "john@example.com"
+    - name: "Jane Smith"
+      email: "jane@example.com"
+```
+
+<ParamField path="metadata" type="OutputMetadataSchema" required={false}>
+</ParamField>
+
+<ParamField path="metadata.description" type="string" required={false}>
+</ParamField>
+
+<ParamField path="metadata.authors" type="list<OutputMetadataAuthor>" required={false}>
+</ParamField>
+
+<ParamField path="metadata.authors[].name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="metadata.authors[].email" type="string" required={true}>
+</ParamField>
+
+## readme
+Controls what goes into the generated README files across all SDKs.
+
+```yaml
+readme:
+  bannerLink: "https://example.com/banner"
+  introduction: "Welcome to our API"
+  apiReferenceLink: "https://docs.example.com"
+  defaultEndpoint:
+    method: "POST"
+    path: "/users"
+    stream: false
+  features:
+    authentication:
+      - method: "POST"
+        path: "/auth/login"
+      - "GET /auth/profile"
+    users:
+      - method: "GET"
+        path: "/users"
+      - method: "POST"
+        path: "/users"
+```
+
+<ParamField path="readme" type="ReadmeSchema" required={false}>
+</ParamField>
+
+<ParamField path="readme.bannerLink" type="string" required={false}>
+</ParamField>
+
+<ParamField path="readme.introduction" type="string" required={false}>
+</ParamField>
+
+<ParamField path="readme.apiReferenceLink" type="string" required={false}>
+</ParamField>
+
+<ParamField path="readme.defaultEndpoint" type="ReadmeEndpointSchema" required={false}>
+</ParamField>
+
+<ParamField path="readme.defaultEndpoint.method" type="string" required={true}>
+</ParamField>
+
+<ParamField path="readme.defaultEndpoint.path" type="string" required={true}>
+</ParamField>
+
+<ParamField path="readme.defaultEndpoint.stream" type="boolean" required={false}>
+</ParamField>
+
+<ParamField path="readme.features" type="map<string, list<ReadmeEndpointSchema>>" required={false}>
+</ParamField>
+
+## default-group
+Which group to use when none is specified.
+
+```yaml
+default-group: "production"
+```
+
+<ParamField path="default-group" type="string" required={false}>
+</ParamField>
+
+## groups
+Organizes different sets of generators (like "production" vs "staging" vs "internal")
+
+```yaml
+groups:
+  production:
+    audiences: ["external"]
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.9.0
+        output:
+          location: npm
+          package-name: "@myorg/api-sdk"
+          token: "${NPM_TOKEN}"
+        github:
+          repository: "myorg/typescript-sdk"
+          mode: "release"
+        config:
+          clientName: "MyApiClient"
+          packageName: "@myorg/api-sdk"
+        metadata:
+          package-description: "Official TypeScript SDK"
+          author: "MyOrg SDK Team"
+        keywords: ["CustomKeyword"]
+        snippets:
+          path: "./snippets"
+        smart-casing: true
+        api:
+          settings:
+            inline-path-parameters: true
+      - name: fernapi/fern-python-sdk
+        version: 2.0.0
+        output:
+          location: pypi
+          package-name: "myorg-api-sdk"
+          token: "${PYPI_TOKEN}"
+          metadata:
+            keywords: ["api", "sdk"]
+            documentation-link: "https://docs.myorg.com"
+    metadata:
+      description: "Production SDKs for MyAPI"
+      authors:
+        - name: "SDK Team"
+          email: "sdk@myorg.com"
+    reviewers:
+      teams:
+        - name: "sdk-team"
+      users:
+        - name: "john-doe"
+```
+
+<ParamField path="groups" type="map<string, GeneratorGroupSchema>" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}" type="GeneratorGroupSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.audiences" type="string[]" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators" type="list<GeneratorInvocationSchema>" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.metadata" type="OutputMetadataSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.reviewers" type="ReviewersSchema" required={false}>
+</ParamField>
+
+### Generator Configuration
+
+<ParamField path="groups.{groupName}.generators[].name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].version" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output" type="GeneratorOutputSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github" type="GithubConfigurationSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].config" type="unknown" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].metadata" type="GeneratorPublishMetadataSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].keywords" type="string[]" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].snippets" type="GeneratorSnippetsSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].ir-version" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].smart-casing" type="boolean" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].api" type="GeneratorAPISettingsSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].disable-examples" type="boolean" required={false}>
+</ParamField>
+
+### Output Locations
+
+#### NPM Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'npm'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.package-name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.token" type="string" required={false}>
+</ParamField>
+
+#### Maven Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'maven'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.coordinate" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.username" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.password" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.signature" type="MavenOutputSignatureSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.signature.keyId" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.signature.password" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.signature.secretKey" type="string" required={true}>
+</ParamField>
+
+#### PyPI Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'pypi'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.package-name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.token" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.username" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.password" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.metadata" type="PypiOutputMetadataSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.metadata.keywords" type="string[]" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.metadata.documentation-link" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.metadata.homepage-link" type="string" required={false}>
+</ParamField>
+
+#### NuGet Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'nuget'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.package-name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.api-key" type="string" required={false}>
+</ParamField>
+
+#### RubyGems Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'rubygems'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.package-name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.api-key" type="string" required={false}>
+</ParamField>
+
+#### Postman Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'postman'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.api-key" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.workspace-id" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.collection-id" type="string" required={false}>
+</ParamField>
+
+#### Local File System Output
+
+<ParamField path="groups.{groupName}.generators[].output.location" type="'local-file-system'" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].output.path" type="string" required={true}>
+</ParamField>
+
+### GitHub Configuration
+
+<ParamField path="groups.{groupName}.generators[].github.repository" type="string" required={true}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.mode" type="'commit' | 'release' | 'pull-request' | 'push'" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.branch" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.license" type="GithubLicenseSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.license.MIT" type="'MIT'" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.license.Apache" type="'Apache-2.0'" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.license.custom" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].github.reviewers" type="ReviewersSchema" required={false}>
+</ParamField>
+
+### Generator Metadata
+
+<ParamField path="groups.{groupName}.generators[].metadata.package-description" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].metadata.email" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].metadata.reference-url" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].metadata.author" type="string" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].metadata.license" type="GithubLicenseSchema" required={false}>
+</ParamField>
+
+### Snippets Configuration
+
+<ParamField path="groups.{groupName}.generators[].snippets.path" type="string" required={true}>
+</ParamField>
+
+### API Settings Override
+
+<ParamField path="groups.{groupName}.generators[].api.auth" type="ApiAuthSchema" required={false}>
+</ParamField>
+
+<ParamField path="groups.{groupName}.generators[].api.settings" type="APIDefinitionSettingsSchema" required={false}>
+</ParamField>
+
+## reviewers
+Who should review generated code.
+
+```yaml
+reviewers:
+  teams:
+    - name: "sdk-team"
+    - name: "api-team"
+  users:
+    - name: "john-doe"
+    - name: "jane-smith"
+```
+
+<ParamField path="reviewers" type="ReviewersSchema" required={false}>
+</ParamField>
+
+<ParamField path="reviewers.teams" type="list<ReviewerSchema>" required={false}>
+</ParamField>
+
+<ParamField path="reviewers.teams[].name" type="string" required={true}>
+</ParamField>
+
+<ParamField path="reviewers.users" type="list<ReviewerSchema>" required={false}>
+</ParamField>
+
+<ParamField path="reviewers.users[].name" type="string" required={true}>
+</ParamField>
