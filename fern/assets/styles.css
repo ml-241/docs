@@ -88,6 +88,36 @@
       grid-row: 2;
     }
 
+    > a[href*="api-definition"]:before {
+      content: "Utilities";
+      font-weight: 500;
+      position: absolute;
+      top: -2rem;
+      left: 0.5rem;
+    }
+
+    > a[href*="api-definition"] {
+      grid-column: 3;
+      grid-row: 1;
+
+      .fern-selection-item-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+
+    > a[href*="cli-api-reference"] {
+      grid-column: 3;
+      grid-row: 2;
+      transform: translateY(-32px);
+
+      .fern-selection-item-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
     > a[href*="openapi"]:before {
       content: "Supported Specs";
       font-weight: 500;
@@ -166,6 +196,14 @@
 
 :is(.dark) .fern-product-selector-radio-group a[href*="ask-fern"] img {
   content: url("https://fern-docs.s3.us-east-2.amazonaws.com/product-switcher/product-switcher-askfern-dark.png") !important;
+}
+
+:is(.dark) .fern-product-selector-radio-group a[href*="api-definition"] img {
+  content: url("https://fern-docs.s3.us-east-2.amazonaws.com/product-switcher/api-definitions-dark.png") !important;
+}
+
+:is(.dark) .fern-product-selector-radio-group a[href*="cli-api-reference"] img {
+  content: url("https://fern-docs.s3.us-east-2.amazonaws.com/product-switcher/cli-api-reference-dark.png") !important;
 }
 
 /*** END -- PRODUCT SELECTOR STYLING ***/
