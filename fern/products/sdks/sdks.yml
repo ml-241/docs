@@ -77,6 +77,7 @@ navigation:
           - page: Publishing to Nuget
             path: ./overview/dotnet/publishing-to-nuget.mdx
           - page: Adding custom code
+            hidden: true
             path: ./overview/dotnet/custom-code.mdx
           - link: Customer Showcase
             href: https://buildwithfern.com/showcase
@@ -92,6 +93,7 @@ navigation:
           - page: Publishing to Packagist
             path: ./overview/php/publishing-to-packagist.mdx
           - page: Adding custom code
+            hidden: true
             path: ./overview/php/custom-code.mdx
           - link: Customer Showcase
             href: https://buildwithfern.com/showcase
@@ -107,6 +109,7 @@ navigation:
           - page: Publishing to RubyGems
             path: ./overview/ruby/publishing-to-rubygems.mdx
           - page: Adding custom code
+            hidden: true
             path: ./overview/ruby/custom-code.mdx
           - link: Customer Showcase
             href: https://buildwithfern.com/showcase
