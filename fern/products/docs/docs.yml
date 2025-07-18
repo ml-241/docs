@@ -12,7 +12,7 @@ navigation:
       - page: Setting up your domain
         path: ./pages/getting-started/setting-up-your-domain.mdx
       - link: Customer Showcase
-        href: https://buildwithfern.com/docs/getting-started/customers
+        href: https://buildwithfern.com/customers
   - section: Component Library
     contents:
       - section: Writing Content
@@ -25,46 +25,62 @@ navigation:
         contents:
           - page: Overview
             path: ./pages/component-library/default-components/overview.mdx
+            icon: fa-regular fa-file
           - page: Accordions
             path: ./pages/component-library/default-components/accordions.mdx
+            icon: fa-regular fa-chevron-down
           - page: Accordion Groups
             path: ./pages/component-library/default-components/accordion-groups.mdx
+            icon: fa-regular fa-chevrons-down
           - page: Aside
             path: ./pages/component-library/default-components/aside.mdx
+            icon: fa-regular fa-comment-dots
           - page: Callouts
             path: ./pages/component-library/default-components/callouts.mdx
+            icon: fa-regular fa-exclamation-triangle
           - page: Cards
             path: ./pages/component-library/default-components/cards.mdx
+            icon: fa-regular fa-id-card
           - page: Card Groups
             path: ./pages/component-library/default-components/card-groups.mdx
+            icon: fa-regular fa-grid-2
           - page: Code Blocks
             path: ./pages/component-library/default-components/code-blocks.mdx
+            icon: fa-regular fa-code
           - page: Embed
             path: ./pages/component-library/default-components/embed.mdx
+            icon: fa-regular fa-window-restore
           - page: Endpoint Request Snippet
             path: ./pages/component-library/default-components/endpoint-request-snippet.mdx
+            icon: fa-regular fa-arrow-up
           - page: Endpoint Response Snippet
             path: ./pages/component-library/default-components/endpoint-response-snippet.mdx
+            icon: fa-regular fa-arrow-down
           - page: Endpoint Schema Snippet
             path: ./pages/component-library/default-components/endpoint-schema-snippet.mdx
+            icon: fa-regular fa-sitemap
           - page: Frames
             path: ./pages/component-library/default-components/frames.mdx
+            icon: fa-regular fa-window-maximize
           - page: Icons
             path: ./pages/component-library/default-components/icons.mdx
+            icon: fa-regular fa-icons
           - page: Parameter Fields
             path: ./pages/component-library/default-components/parameter-fields.mdx
+            icon: fa-regular fa-list
           - page: Steps
             path: ./pages/component-library/default-components/steps.mdx
+            icon: fa-regular fa-list-ol
           - page: Tabs
             path: ./pages/component-library/default-components/tabs.mdx
+            icon: fa-regular fa-folder-open
           - page: Tooltips
             path: ./pages/component-library/default-components/tooltips.mdx
-      - section: Custom Components
-        contents:
-          - page: Reusable Snippets
-            path: ./pages/component-library/custom-components/reusable-snippets.mdx
-          - page: Custom React Components
-            path: ./pages/component-library/custom-components/custom-react-components.mdx
+            icon: fa-regular fa-comment
+      - page: Reusable Snippets
+        path: ./pages/component-library/custom-components/reusable-snippets.mdx
+      - page: Custom React Components
+        path: ./pages/component-library/custom-components/custom-react-components.mdx
   - section: Configuration
     collapsed: true
     contents:
@@ -79,8 +95,6 @@ navigation:
     contents:
       - page: Overview
         path: ./pages/navigation/overview.mdx
-      - page: Tabs
-        path: ./pages/navigation/tabs.mdx
       - page: Versions
         path: ./pages/navigation/versions.mdx
       - page: Products
@@ -136,10 +150,17 @@ navigation:
   - section: Authentication
     collapsed: true
     contents:
+      - page: SSO
+        path: ./pages/authentication/sso.mdx
       - page: RBAC
         path: ./pages/authentication/rbac.mdx
       - page: API Key Injection
         path: ./pages/api-references/autopopulate-api-key.mdx
+  - section: Enterprise
+    collapsed: true
+    contents:
+      - page: Self-hosted
+        path: ./pages/enterprise/self-hosted.mdx
   - section: Integrations
     collapsed: true
     contents:
