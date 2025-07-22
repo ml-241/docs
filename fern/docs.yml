@@ -145,7 +145,10 @@ analytics:
   gtm:
     container-id: GTM-55W3VNDW
 
-
+experimental:
+  mdx-components:
+    - ./components
+    
 # Redirects for new docs structure migration
 redirects:
 
@@ -269,7 +272,7 @@ redirects:
 
   # SDK Guides - specific cases first, then general pattern
   - source: /learn/sdks/guides/generate-your-first-sdk
-    destination: /learn/sdks/getting-started/generate-your-first-sdk
+    destination: /learn/sdks/introduction/overview
     permanent: true
   - source: /learn/sdks/guides/publish-a-public-facing-sdk
     destination: /learn/sdks/guides/publish-your-sdk
