@@ -38,9 +38,7 @@
 }
 
 /*** START -- PRODUCT SELECTOR STYLING ***/
-
 @media (min-width: 1024px) {
-
   .fern-product-selector {
     transform: translate(-2px, 4px);
   }
@@ -212,6 +210,10 @@
 /*** END -- PRODUCT SELECTOR STYLING ***/
 
 /*** START -- DOCS HOMEPAGE STYLING ***/
+a[href*="changelog"] svg {
+  display: none;
+}
+
 .docs-homepage {
   position: relative;
   .fern-card {
@@ -284,6 +286,10 @@
 /*** END -- DOCS HOMEPAGE STYLING ***/
 
 /*** START -- SDKS HOMEPAGE STYLING ***/
+a[href*="changelog"] svg {
+  display: none;
+}
+
 .sdks-homepage {
   position: relative;
 
