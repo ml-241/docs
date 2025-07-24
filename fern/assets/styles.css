@@ -854,14 +854,14 @@ a[href*="changelog"] svg {
   display: block;
   overflow: visible; /* Changed from hidden - was clipping interactive areas */
   transform: translateY(0px);
-  transition: transform 1s ease-out !important;
+  transition: transform 250ms ease-out !important;
   will-change: transform;
   /* Ensure click events can reach the canvas */
   pointer-events: auto;
 }
 
 .sdk-rive:hover {
-  transform: translateY(-4px) !important;
+  transform: translateY(-3px) !important;
 }
 
 /* Ensure the canvas can receive clicks and is properly layered */

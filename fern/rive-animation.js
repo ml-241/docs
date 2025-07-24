@@ -61,6 +61,7 @@
                 canvas: canvas,
                 autoplay: true,
                 stateMachines: stateMachine,
+                autoBind: false, // Manual binding for theme switching
                 layout: new rive.Layout({
                     fit: rive.Fit[fit], // Configurable fit mode
                     alignment: rive.Alignment.Center
@@ -76,6 +77,12 @@
                     
                     // Set up dynamic cursor changes based on Rive's interactive areas
                     setupDynamicCursor(canvas, r, stateMachine);
+                    
+                    // Initialize with current site theme
+                    if (r.viewModelCount > 0) {
+                        const currentIsDark = detectSiteTheme();
+                        setRiveTheme(r, currentIsDark, 'Palette');
+                    }
                     
                     // Set up Rive event handling (primary method)
                     try {
@@ -222,7 +229,7 @@
         // SDK Animation with native Rive interactions
         createRiveAnimation({
             canvasSelector: '#sdk-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68802bc752aef23fab76e6fc_sdk-rive.riv',
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68802bc752aef23fab76e6fc_12235f640f9ad3339b42e8d026c6345a_sdk-rive.riv',
             aspectRatio: 369/93,
             stateMachine: "State Machine 1",
             fallbackImages: [
@@ -243,7 +250,7 @@
         // Docs Animation
         createRiveAnimation({
             canvasSelector: '#docs-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_8014c1e8d9aa904e6d659541b198df0f_docs_animation.riv',
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_d261956a0f627eb6b94c39aa9fcc26f0_docs_animation.riv',
             aspectRatio: 404/262,
             stateMachine: "State Machine 1",
             fallbackImages: [
@@ -264,7 +271,7 @@
         // AI Animation with custom event handling
         createRiveAnimation({
             canvasSelector: '#ai-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_afec146ef95157cbef522bcdee1ba8d9_ai_animation.riv',
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_b8d233d3b43c3da6eff8cc65874d7b49_ai_animation.riv',
             aspectRatio: 371/99,
             stateMachine: "State Machine 1",
             fallbackImages: [
@@ -289,6 +296,13 @@
         });
 
         // Add additional Rive animations by calling createRiveAnimation() with your config
+        
+        // Enable automatic site theme synchronization
+        setupRiveSiteThemeSync();
+        
+        // Or manually control themes:
+        // switchRiveThemes(true);  // Switch to dark theme
+        // switchRiveThemes(false); // Switch to light theme
     }
 
     // Cleanup function to dispose of Rive instances
@@ -323,6 +337,167 @@
         }
     }).observe(document, { subtree: true, childList: true });
 
-    // Expose function globally for manual use
+    // Data Binding approach using View Model Instances (Official Rive API)
+    function setRiveTheme(riveInstance, isDark, viewModelName = 'Palette') {
+        try {
+            // Get the view model by name
+            const viewModel = riveInstance.viewModelByName(viewModelName);
+            if (!viewModel) {
+                console.warn(`View model '${viewModelName}' not found.`);
+                return false;
+            }
+            
+            // Check if instances exist
+            if (viewModel.instanceCount === 0) {
+                console.warn(`No instances found in view model '${viewModelName}'. Please create instances in the Rive editor.`);
+                return false;
+            }
+            
+            let viewModelInstance = null;
+            const instanceName = isDark ? 'Dark' : 'Light';
+            
+            // Try 1: Get instance by name (if names are set)
+            try {
+                viewModelInstance = viewModel.instanceByName(instanceName);
+            } catch (e) {
+                // Name-based access failed, continue to index-based
+            }
+            
+            // Try 2: Get instance by index (fallback for unnamed instances)
+            if (!viewModelInstance) {
+                const instanceIndex = isDark ? 1 : 0; // Assume: 0=Light, 1=Dark
+                if (instanceIndex < viewModel.instanceCount) {
+                    viewModelInstance = viewModel.instanceByIndex(instanceIndex);
+                    console.log(`Using instance by index: ${instanceIndex} (${isDark ? 'Dark' : 'Light'} theme)`);
+                } else {
+                    console.warn(`Instance index ${instanceIndex} not available. Only ${viewModel.instanceCount} instances found.`);
+                    return false;
+                }
+            }
+            
+            if (!viewModelInstance) {
+                console.warn(`Could not get ${instanceName} theme instance.`);
+                return false;
+            }
+            
+            // Bind the instance to the Rive file (this switches the theme)
+            riveInstance.bindViewModelInstance(viewModelInstance);
+            console.log(`Successfully switched to ${isDark ? 'Dark' : 'Light'} theme`);
+            return true;
+            
+        } catch (e) {
+            console.warn('Could not switch Rive theme instance:', e);
+            return false;
+        }
+    }
+
+    // Switch all animations to light/dark theme using Data Binding
+    function switchAllRiveThemes(isDark) {
+        document.querySelectorAll('canvas[id$="rive-canvas"]').forEach(canvas => {
+            if (canvas._riveInstance) {
+                setRiveTheme(canvas._riveInstance, isDark);
+            }
+        });
+    }
+
+    // Detect current site theme using multiple methods
+    function detectSiteTheme() {
+        // Method 1: Check HTML/body classes (most common)
+        if (document.documentElement.classList.contains('dark') || 
+            document.body.classList.contains('dark') ||
+            document.documentElement.classList.contains('dark-mode') || 
+            document.body.classList.contains('dark-mode')) {
+            return true;
+        }
+        
+        // Method 2: Check data attributes
+        if (document.documentElement.getAttribute('data-theme') === 'dark' ||
+            document.body.getAttribute('data-theme') === 'dark' ||
+            document.documentElement.getAttribute('theme') === 'dark') {
+            return true;
+        }
+        
+        // Method 3: Check CSS custom properties (if available)
+        if (typeof getComputedStyle !== 'undefined') {
+            const style = getComputedStyle(document.documentElement);
+            const colorScheme = style.getPropertyValue('color-scheme');
+            if (colorScheme.includes('dark')) {
+                return true;
+            }
+        }
+        
+        // Method 4: Fallback to system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return true;
+        }
+        
+        return false; // Default to light theme
+    }
+
+    // Set up comprehensive theme detection and syncing
+    function setupRiveSiteThemeSync() {
+        // Set initial theme based on current site state
+        const initialIsDark = detectSiteTheme();
+        switchAllRiveThemes(initialIsDark);
+        console.log('Rive themes initialized:', initialIsDark ? 'Dark' : 'Light');
+        
+        // Method 1: Watch for class changes on html/body (most reliable)
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && 
+                    (mutation.attributeName === 'class' || 
+                     mutation.attributeName === 'data-theme' ||
+                     mutation.attributeName === 'theme')) {
+                    const isDark = detectSiteTheme();
+                    switchAllRiveThemes(isDark);
+                    console.log('Site theme changed, Rive themes updated:', isDark ? 'Dark' : 'Light');
+                }
+            });
+        });
+        
+        // Observe both html and body for attribute changes
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class', 'data-theme', 'theme']
+        });
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class', 'data-theme', 'theme']
+        });
+        
+        // Method 2: Listen for system color scheme changes (backup)
+        if (window.matchMedia) {
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeMediaQuery.addEventListener('change', (e) => {
+                // Only apply system preference if no explicit site theme is set
+                if (!document.documentElement.classList.contains('dark') && 
+                    !document.documentElement.classList.contains('light') &&
+                    !document.documentElement.getAttribute('data-theme')) {
+                    switchAllRiveThemes(e.matches);
+                    console.log('System theme changed, Rive themes updated:', e.matches ? 'Dark' : 'Light');
+                }
+            });
+        }
+        
+        // Method 3: Listen for custom theme events (if your site dispatches them)
+        document.addEventListener('themeChanged', (e) => {
+            if (e.detail && typeof e.detail.isDark === 'boolean') {
+                switchAllRiveThemes(e.detail.isDark);
+                console.log('Custom theme event received, Rive themes updated:', e.detail.isDark ? 'Dark' : 'Light');
+            }
+        });
+        
+        return observer; // Return observer for cleanup if needed
+    }
+
+    // Legacy function for backward compatibility
+    function setupRiveSystemThemeDetection() {
+        return setupRiveSiteThemeSync();
+    }
+
+    // Expose functions globally for manual use
     window.createRiveAnimation = createRiveAnimation;
-})(); 
+    window.switchRiveThemes = switchAllRiveThemes;
+    window.setupRiveSystemThemeDetection = setupRiveSystemThemeDetection;
+    window.setupRiveSiteThemeSync = setupRiveSiteThemeSync;
+})();
