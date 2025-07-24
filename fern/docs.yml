@@ -1,14 +1,18 @@
 instances:
   - url: fern-v2.docs.buildwithfern.com/learn/v2
-  - url: fern-api.docs.buildwithfern.com/learn
-    custom-domain: buildfern.com/learn
+  - url: fern.docs.buildwithfern.com/learn
+    custom-domain: buildwithfern.com/learn
     edit-this-page:
       github:
         owner: fern-api
         repo: docs
         branch: main
 
-title: Fern
+title: Fern Documentation
+
+metadata:
+  og:image: https://fern-docs.s3.us-east-2.amazonaws.com/fern-docs-og_image-compressed.png
+  twitter:image: https://fern-docs.s3.us-east-2.amazonaws.com/fern-docs-og_image-compressed.png
 
 products:
   - display-name: Home
