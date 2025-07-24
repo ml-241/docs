@@ -276,12 +276,12 @@
             stateMachine: "State Machine 1",
             fallbackImages: [
                 {
-                    src: '/learn/home/images/ai-preview-light.svg',
+                    src: '/learn/home/images/ai-search-preview-light.svg',
                     className: 'ai-preview-img dark:hidden',
                     alt: 'AI Animation Preview'
                 },
                 {
-                    src: '/learn/home/images/ai-preview-dark.svg',
+                    src: '/learn/home/images/ai-search-preview-dark.svg',
                     className: 'ai-preview-img hidden dark:block',
                     alt: 'AI Animation Preview'
                 }
