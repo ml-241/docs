@@ -243,7 +243,7 @@
         // Docs Animation
         createRiveAnimation({
             canvasSelector: '#docs-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_579220ccfc15555b0fe23088ea2cb9bc_docs_animation.riv',
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_8014c1e8d9aa904e6d659541b198df0f_docs_animation.riv',
             aspectRatio: 404/262,
             stateMachine: "State Machine 1",
             fallbackImages: [
