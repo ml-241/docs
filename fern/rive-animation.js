@@ -1,16 +1,15 @@
-// Reusable Rive Animation Integration for Fern Docs
+// Reusable Rive Animation Integration - Uses Native Rive Interactions Only
 (function() {
     let riveRuntimeLoaded = false;
     let pendingAnimations = [];
 
-    // Main function to create a Rive animation
+    // Create a Rive animation with automatic cursor detection - all interactions handled by Rive natively
     function createRiveAnimation(config) {
         const {
             canvasSelector,          // CSS selector for canvas (e.g., '#rive-canvas')
             riveUrl,                 // CDN URL for .riv file
             aspectRatio,             // e.g., 369/93 or 16/9
             stateMachine = "State Machine 1",
-            interactiveStates = [],  // e.g., ['Ruby', 'Python', 'TypeScript']
             fallbackImages = [],     // Array of {src, className, alt}
             fit = 'Contain'          // Rive fit mode
         } = config;
@@ -31,7 +30,7 @@
             
             if (!document.querySelector('script[src*="@rive-app/canvas"]')) {
                 const script = document.createElement('script');
-                script.src = 'https://unpkg.com/@rive-app/canvas@2.7.0';
+                script.src = 'https://unpkg.com/@rive-app/canvas@latest';
                 script.onload = function() {
                     riveRuntimeLoaded = true;
                     // Process all pending animations
@@ -80,15 +79,14 @@
                     fit: rive.Fit[fit],
                     alignment: rive.Alignment.Center
                 }),
-                shouldDisableRiveListeners: false,
+                shouldDisableRiveListeners: false, // Enable native Rive interactions (hover, click, etc.)
                 onLoad: () => {
+                    // Let Rive handle its own interactions natively
                     canvas.style.pointerEvents = 'auto';
                     canvas.style.userSelect = 'none';
                     
-                    // Add interactive click handling if states are provided
-                    if (interactiveStates.length > 0) {
-                        setupInteractiveClicks(canvas, r, stateMachine, interactiveStates);
-                    }
+                    // Set up dynamic cursor changes based on Rive's interactive areas
+                    setupDynamicCursor(canvas, r, stateMachine);
                 },
                 onLoadError: (err) => {
                     console.error('Rive load error:', err);
@@ -140,22 +138,68 @@
         }
     }
 
-    // Setup interactive click handling
-    function setupInteractiveClicks(canvas, riveInstance, stateMachine, states) {
-        canvas.addEventListener('click', () => {
-            const inputs = riveInstance.stateMachineInputs(stateMachine);
-            
-            // Find which hover state is currently active and trigger its click
-            for (const state of states) {
-                const hoverInput = inputs.find(i => i.name === `${state} Hovered`);
-                const clickInput = inputs.find(i => i.name === `${state} Clicked`);
+    // Setup dynamic cursor changes based on Rive's interactive areas
+    function setupDynamicCursor(canvas, riveInstance, stateMachine) {
+        canvas.addEventListener('mousemove', (event) => {
+            try {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
                 
-                if (hoverInput && hoverInput.value && clickInput) {
-                    clickInput.fire();
-                    break;
+                // Scale coordinates for high DPI displays
+                const dpr = window.devicePixelRatio || 1;
+                const scaledX = x * dpr;
+                const scaledY = y * dpr;
+                
+                let shouldShowPointer = false;
+                
+                // Try different methods to detect interactive areas (in priority order)
+                if (riveInstance.hitTest && typeof riveInstance.hitTest === 'function') {
+                    // Best method: Use Rive's built-in hit testing
+                    shouldShowPointer = riveInstance.hitTest(scaledX, scaledY);
+                } else if (riveInstance.cursor) {
+                    // Good method: Check Rive's cursor property
+                    shouldShowPointer = riveInstance.cursor === 'pointer' || riveInstance.cursor === 'hand';
+                } else if (riveInstance.renderer && riveInstance.renderer.cursor) {
+                    // Fallback method: Check renderer's cursor
+                    shouldShowPointer = riveInstance.renderer.cursor === 'pointer';
+                } else {
+                    // Last resort: Check hover states in any state machine
+                    try {
+                        const stateMachineNames = riveInstance.stateMachineNames || [stateMachine];
+                        let foundHoverStates = [];
+                        
+                        for (const smName of stateMachineNames) {
+                            try {
+                                const inputs = riveInstance.stateMachineInputs(smName);
+                                const hoverStates = inputs.filter(input => 
+                                    (input.name.toLowerCase().includes('hover') || 
+                                     input.name.toLowerCase().includes('over') ||
+                                     input.name.toLowerCase().includes('hovered')) && 
+                                    input.value
+                                );
+                                foundHoverStates.push(...hoverStates);
+                            } catch (e) {
+                                continue; // Skip failed state machines
+                            }
+                        }
+                        
+                        shouldShowPointer = foundHoverStates.length > 0;
+                    } catch (e) {
+                        // Ignore errors and default to no pointer
+                    }
                 }
+                
+                canvas.style.cursor = shouldShowPointer ? 'pointer' : 'default';
+                
+            } catch (e) {
+                canvas.style.cursor = 'default';
             }
         });
+        
+        canvas.addEventListener('mouseleave', () => {
+            canvas.style.cursor = 'default';
+                });
     }
 
     // Show fallback images when Rive fails to load
@@ -174,13 +218,12 @@
 
     // Initialize predefined animations
     function initializeAnimations() {
-        // SDK Animation (your current one)
+        // SDK Animation with native Rive interactions
         createRiveAnimation({
             canvasSelector: '#sdk-rive-canvas',
             riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68802bc752aef23fab76e6fc_sdk-rive.riv',
             aspectRatio: 369/93,
             stateMachine: "State Machine 1",
-            interactiveStates: ['Ruby', 'PHP', 'NET', 'Java', 'GO', 'TypeScript', 'Python'],
             fallbackImages: [
                 {
                     src: '/learn/home/images/sdks-preview-light.svg',
@@ -201,7 +244,6 @@
             riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_579220ccfc15555b0fe23088ea2cb9bc_docs_animation.riv',
             aspectRatio: 404/262,
             stateMachine: "State Machine 1",
-            interactiveStates: [],
             fallbackImages: [
                 {
                     src: '/learn/home/images/docs-preview-light.svg',
@@ -219,10 +261,9 @@
         // AI Animation
         createRiveAnimation({
             canvasSelector: '#ai-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_bded8d9202f9014c85204d35ebaed64e_ai_animation.riv',
-            aspectRatio: 400/99,
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_afec146ef95157cbef522bcdee1ba8d9_ai_animation.riv',
+            aspectRatio: 371/99,
             stateMachine: "State Machine 1",
-            interactiveStates: [],
             fallbackImages: [
                 {
                     src: '/learn/home/images/ai-preview-light.svg',
@@ -237,15 +278,7 @@
             ]
         });
 
-        // Add your other Rive animations here:
-        // createRiveAnimation({
-        //     canvasSelector: '#docs-rive-canvas',
-        //     riveUrl: 'https://your-cdn.com/docs-animation.riv',
-        //     aspectRatio: 16/9,
-        //     stateMachine: "Main State Machine",
-        //     interactiveStates: ['Button1', 'Button2'],
-        //     fallbackImages: [...]
-        // });
+        // Add additional Rive animations by calling createRiveAnimation() with your config
     }
 
     // Cleanup function to dispose of Rive instances
