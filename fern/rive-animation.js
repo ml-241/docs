@@ -1,9 +1,9 @@
-// Reusable Rive Animation Integration - Uses Native Rive Interactions Only
+// Reusable Rive Animation Integration - Native Interactions + Event Handling
 (function() {
     let riveRuntimeLoaded = false;
     let pendingAnimations = [];
 
-    // Create a Rive animation with automatic cursor detection - all interactions handled by Rive natively
+    // Create a Rive animation with cursor detection, native interactions, and event handling
     function createRiveAnimation(config) {
         const {
             canvasSelector,          // CSS selector for canvas (e.g., '#rive-canvas')
@@ -11,7 +11,8 @@
             aspectRatio,             // e.g., 369/93 or 16/9
             stateMachine = "State Machine 1",
             fallbackImages = [],     // Array of {src, className, alt}
-            fit = 'Contain'          // Rive fit mode
+            fit = 'Contain',         // Rive fit mode
+            eventHandlers = {}       // Custom event handlers: {'Event Name': (eventData) => {...}}
         } = config;
 
         const canvas = document.querySelector(canvasSelector);
@@ -87,6 +88,17 @@
                     
                     // Set up dynamic cursor changes based on Rive's interactive areas
                     setupDynamicCursor(canvas, r, stateMachine);
+                    
+                    // Set up Rive event handling (primary method)
+                    try {
+                        if (r.on && rive.EventType && rive.EventType.RiveEvent) {
+                            r.on(rive.EventType.RiveEvent, (riveEvent) => {
+                                handleRiveEvent(riveEvent, eventHandlers);
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('Could not set up Rive event listeners:', e);
+                    }
                 },
                 onLoadError: (err) => {
                     console.error('Rive load error:', err);
@@ -202,6 +214,26 @@
                 });
     }
 
+
+    
+    // Handle any Rive event (explicit handlers only)
+    function handleRiveEvent(riveEvent, eventHandlers = {}) {
+        try {
+            const eventData = riveEvent.data;
+            const eventName = eventData.name;
+            
+            // Only handle events that have explicitly defined handlers
+            if (eventHandlers[eventName]) {
+                eventHandlers[eventName](eventData);
+            }
+            // If no handler is defined, the event is ignored (no fallbacks)
+        } catch (e) {
+            console.error('Error handling Rive event:', e);
+        }
+    }
+
+
+
     // Show fallback images when Rive fails to load
     function showFallbackImages(canvas, fallbackImages) {
         if (fallbackImages.length === 0) return;
@@ -236,6 +268,7 @@
                     alt: 'SDK Generation Preview'
                 }
             ]
+            // No eventHandlers - this animation only uses native interactions
         });
 
         // Docs Animation
@@ -256,9 +289,10 @@
                     alt: 'Docs Animation Preview'
                 }
             ]
+            // No eventHandlers - this animation only uses native interactions
         });
 
-        // AI Animation
+        // AI Animation with custom event handling
         createRiveAnimation({
             canvasSelector: '#ai-rive-canvas',
             riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_afec146ef95157cbef522bcdee1ba8d9_ai_animation.riv',
@@ -275,7 +309,14 @@
                     className: 'ai-preview-img hidden dark:block',
                     alt: 'AI Animation Preview'
                 }
-            ]
+            ],
+            eventHandlers: {
+                'Open URL': (eventData) => {
+                    // Custom URL handling for AI animation
+                    console.log('AI animation URL event:', eventData.url);
+                    window.open(eventData.url, '_blank', 'noopener,noreferrer');
+                }
+            }
         });
 
         // Add additional Rive animations by calling createRiveAnimation() with your config
