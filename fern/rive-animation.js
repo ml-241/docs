@@ -219,8 +219,8 @@
         // AI Animation
         createRiveAnimation({
             canvasSelector: '#ai-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_941db85f022a36b2727f67c219fe3416_ai_animation.riv',
-            aspectRatio: 371/99,
+            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_bded8d9202f9014c85204d35ebaed64e_ai_animation.riv',
+            aspectRatio: 400/99,
             stateMachine: "State Machine 1",
             interactiveStates: [],
             fallbackImages: [
