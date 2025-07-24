@@ -11,7 +11,7 @@
             aspectRatio,             // e.g., 369/93 or 16/9
             stateMachine = "State Machine 1",
             fallbackImages = [],     // Array of {src, className, alt}
-            fit = 'Contain',         // Rive fit mode
+            fit = 'Contain',         // Rive fit mode (Contain, Cover, FitWidth, FitHeight, None)
             eventHandlers = {}       // Custom event handlers: {'Event Name': (eventData) => {...}}
         } = config;
 
@@ -44,40 +44,25 @@
         }
 
         try {
-            // Calculate correct dimensions with high-DPI support
-            const rect = riveContainer.getBoundingClientRect();
-            
-            // Use available width, fallback to a reasonable default if container has no width yet
-            const width = rect.width > 0 ? rect.width : 800;
-            const height = width / aspectRatio; // Force correct aspect ratio
-            
-            // Set container dimensions to prevent layout shift
-            riveContainer.style.width = width + 'px';
-            riveContainer.style.height = height + 'px';
-            
-            // Also ensure the parent container accommodates the content
-            if (sdkRiveContainer) {
-                sdkRiveContainer.style.minHeight = height + 'px';
+            // Set container aspect ratio while respecting existing layout
+            const currentWidth = riveContainer.offsetWidth || riveContainer.clientWidth;
+            if (currentWidth > 0) {
+                // Use existing width, set height based on aspect ratio
+                riveContainer.style.height = (currentWidth / aspectRatio) + 'px';
+            } else {
+                // Fallback: use CSS aspect-ratio if container has no initial width
+                riveContainer.style.aspectRatio = aspectRatio.toString();
+                riveContainer.style.width = '100%';
             }
             
-            // Force minimum 2x resolution for crispness (even on non-retina displays)
-            const dpr = Math.max(window.devicePixelRatio || 1, 2);
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-            
-            // Set explicit CSS size to prevent stretching
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            canvas.style.display = 'block';
-            
-            // Create Rive instance
+            // Let Rive handle canvas sizing internally - much simpler!
             const r = new rive.Rive({
                 src: riveUrl,
                 canvas: canvas,
                 autoplay: true,
                 stateMachines: stateMachine,
                 layout: new rive.Layout({
-                    fit: rive.Fit[fit],
+                    fit: rive.Fit[fit], // Configurable fit mode
                     alignment: rive.Alignment.Center
                 }),
                 shouldDisableRiveListeners: false, // Enable native Rive interactions (hover, click, etc.)
@@ -85,6 +70,9 @@
                     // Let Rive handle its own interactions natively
                     canvas.style.pointerEvents = 'auto';
                     canvas.style.userSelect = 'none';
+                    
+                    // Critical: Resize drawing surface to canvas after load
+                    r.resizeDrawingSurfaceToCanvas();
                     
                     // Set up dynamic cursor changes based on Rive's interactive areas
                     setupDynamicCursor(canvas, r, stateMachine);
@@ -110,38 +98,19 @@
             // Store instance for cleanup
             canvas._riveInstance = r;
             
-            // Add resize observer for responsive behavior
-            const resizeObserver = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    if (entry.target === riveContainer) {
-                        const newWidth = entry.contentRect.width;
-                        if (newWidth > 0) {
-                            const newHeight = newWidth / aspectRatio;
-                            
-                            // Update container size
-                            riveContainer.style.height = newHeight + 'px';
-                            if (sdkRiveContainer) {
-                                sdkRiveContainer.style.minHeight = newHeight + 'px';
-                            }
-                            
-                            // Update canvas size
-                            const dpr = Math.max(window.devicePixelRatio || 1, 2);
-                            canvas.width = newWidth * dpr;
-                            canvas.height = newHeight * dpr;
-                            canvas.style.width = newWidth + 'px';
-                            canvas.style.height = newHeight + 'px';
-                            
-                            // Resize Rive animation
-                            if (r && r.resizeDrawingSurfaceToCanvas) {
-                                r.resizeDrawingSurfaceToCanvas();
-                            }
-                        }
-                    }
+            // Simple resize handling (following Rive best practices)
+            const windowResizeHandler = () => {
+                // Let Rive handle the canvas sizing internally
+                if (r && r.resizeDrawingSurfaceToCanvas) {
+                    r.resizeDrawingSurfaceToCanvas();
                 }
-            });
+            };
             
-            resizeObserver.observe(riveContainer);
-            canvas._resizeObserver = resizeObserver;
+            // Add window resize listener (as per Rive documentation)
+            window.addEventListener('resize', windowResizeHandler, false);
+            
+            // Store cleanup function
+            canvas._windowResizeHandler = windowResizeHandler;
             
         } catch (error) {
             console.error('Rive creation error:', error);
@@ -329,9 +298,9 @@
                 canvas._riveInstance.cleanup();
                 canvas._riveInstance = null;
             }
-            if (canvas._resizeObserver) {
-                canvas._resizeObserver.disconnect();
-                canvas._resizeObserver = null;
+            if (canvas._windowResizeHandler) {
+                window.removeEventListener('resize', canvas._windowResizeHandler, false);
+                canvas._windowResizeHandler = null;
             }
         });
     }
