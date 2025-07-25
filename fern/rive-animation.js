@@ -226,6 +226,11 @@
 
     // Initialize predefined animations
     function initializeAnimations() {
+        // Only run on home product page
+        if (!window.location.pathname.includes('/home')) {
+            return;
+        }
+        
         // SDK Animation with native Rive interactions
         createRiveAnimation({
             canvasSelector: '#sdk-rive-canvas',
@@ -234,12 +239,12 @@
             stateMachine: "State Machine 1",
             fallbackImages: [
                 {
-                    src: '/learn/home/images/sdks-preview-light.svg',
+                    src: './images/sdks-preview-light.svg',
                     className: 'sdks-preview-img dark:hidden',
                     alt: 'SDK Generation Preview'
                 },
                 {
-                    src: '/learn/home/images/sdks-preview-dark.svg',
+                    src: './images/sdks-preview-dark.svg',
                     className: 'sdks-preview-img hidden dark:block',
                     alt: 'SDK Generation Preview'
                 }
@@ -255,12 +260,12 @@
             stateMachine: "State Machine 1",
             fallbackImages: [
                 {
-                    src: '/learn/home/images/docs-preview-light.svg',
+                    src: './images/docs-preview-light.svg',
                     className: 'docs-preview-img dark:hidden',
                     alt: 'Docs Animation Preview'
                 },
                 {
-                    src: '/learn/home/images/docs-preview-dark.svg',
+                    src: './images/docs-preview-dark.svg',
                     className: 'docs-preview-img hidden dark:block',
                     alt: 'Docs Animation Preview'
                 }
@@ -276,19 +281,19 @@
             stateMachine: "State Machine 1",
             fallbackImages: [
                 {
-                    src: '/learn/home/images/ai-search-preview-light.svg',
+                    src: './images/ai-search-preview-light.svg',
                     className: 'ai-preview-img dark:hidden',
                     alt: 'AI Animation Preview'
                 },
                 {
-                    src: '/learn/home/images/ai-search-preview-dark.svg',
+                    src: './images/ai-search-preview-dark.svg',
                     className: 'ai-preview-img hidden dark:block',
                     alt: 'AI Animation Preview'
                 }
             ],
             eventHandlers: {
                 'Open URL': (eventData) => {
-                    // Custom URL handling for AI animation
+                    // Custom URL handling for AI animation, URL is defined in the Rive file
                     console.log('AI animation URL event:', eventData.url);
                     window.open(eventData.url, '_blank', 'noopener,noreferrer');
                 }
