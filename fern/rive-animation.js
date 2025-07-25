@@ -234,7 +234,7 @@
         // SDK Animation with native Rive interactions
         createRiveAnimation({
             canvasSelector: '#sdk-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68802bc752aef23fab76e6fc_12235f640f9ad3339b42e8d026c6345a_sdk-rive.riv',
+            riveUrl: 'https://fern-docs.s3.us-east-2.amazonaws.com/rive-files/sdk_animation.riv',
             aspectRatio: 369/93,
             stateMachine: "State Machine 1",
             fallbackImages: [
@@ -255,7 +255,7 @@
         // Docs Animation
         createRiveAnimation({
             canvasSelector: '#docs-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825994c55f0eece04ce4e2_d261956a0f627eb6b94c39aa9fcc26f0_docs_animation.riv',
+            riveUrl: 'https://fern-docs.s3.us-east-2.amazonaws.com/rive-files/docs_animation.riv',
             aspectRatio: 404/262,
             stateMachine: "State Machine 1",
             fallbackImages: [
@@ -276,7 +276,7 @@
         // AI Animation with custom event handling
         createRiveAnimation({
             canvasSelector: '#ai-rive-canvas',
-            riveUrl: 'https://cdn.prod.website-files.com/67880ff570cdb1a85eee946f/68825e97fd6225e1c8a7488c_b8d233d3b43c3da6eff8cc65874d7b49_ai_animation.riv',
+            riveUrl: 'https://fern-docs.s3.us-east-2.amazonaws.com/rive-files/ai_animation.riv',
             aspectRatio: 371/99,
             stateMachine: "State Machine 1",
             fallbackImages: [
