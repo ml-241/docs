@@ -373,7 +373,6 @@
                 const instanceIndex = isDark ? 1 : 0; // Assume: 0=Light, 1=Dark
                 if (instanceIndex < viewModel.instanceCount) {
                     viewModelInstance = viewModel.instanceByIndex(instanceIndex);
-                    console.log(`Using instance by index: ${instanceIndex} (${isDark ? 'Dark' : 'Light'} theme)`);
                 } else {
                     console.warn(`Instance index ${instanceIndex} not available. Only ${viewModel.instanceCount} instances found.`);
                     return false;
@@ -387,7 +386,6 @@
             
             // Bind the instance to the Rive file (this switches the theme)
             riveInstance.bindViewModelInstance(viewModelInstance);
-            console.log(`Successfully switched to ${isDark ? 'Dark' : 'Light'} theme`);
             return true;
             
         } catch (e) {
@@ -405,104 +403,39 @@
         });
     }
 
-    // Detect current site theme using multiple methods
+    // Detect current site theme for Tailwind CSS class-based approach
     function detectSiteTheme() {
-        // Method 1: Check HTML/body classes (most common)
-        if (document.documentElement.classList.contains('dark') || 
-            document.body.classList.contains('dark') ||
-            document.documentElement.classList.contains('dark-mode') || 
-            document.body.classList.contains('dark-mode')) {
-            return true;
-        }
-        
-        // Method 2: Check data attributes
-        if (document.documentElement.getAttribute('data-theme') === 'dark' ||
-            document.body.getAttribute('data-theme') === 'dark' ||
-            document.documentElement.getAttribute('theme') === 'dark') {
-            return true;
-        }
-        
-        // Method 3: Check CSS custom properties (if available)
-        if (typeof getComputedStyle !== 'undefined') {
-            const style = getComputedStyle(document.documentElement);
-            const colorScheme = style.getPropertyValue('color-scheme');
-            if (colorScheme.includes('dark')) {
-                return true;
-            }
-        }
-        
-        // Method 4: Fallback to system preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return true;
-        }
-        
-        return false; // Default to light theme
+        // Check for 'dark' class on html element (Tailwind CSS approach)
+        return document.documentElement.classList.contains('dark');
     }
 
-    // Set up comprehensive theme detection and syncing
+    // Set up theme detection and syncing
     function setupRiveSiteThemeSync() {
         // Set initial theme based on current site state
         const initialIsDark = detectSiteTheme();
         switchAllRiveThemes(initialIsDark);
-        console.log('Rive themes initialized:', initialIsDark ? 'Dark' : 'Light');
         
-        // Method 1: Watch for class changes on html/body (most reliable)
+        // Watch for class changes on html element
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && 
-                    (mutation.attributeName === 'class' || 
-                     mutation.attributeName === 'data-theme' ||
-                     mutation.attributeName === 'theme')) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                     const isDark = detectSiteTheme();
                     switchAllRiveThemes(isDark);
-                    console.log('Site theme changed, Rive themes updated:', isDark ? 'Dark' : 'Light');
                 }
             });
         });
         
-        // Observe both html and body for attribute changes
+        // Observe html element for class changes
         observer.observe(document.documentElement, {
             attributes: true,
-            attributeFilter: ['class', 'data-theme', 'theme']
-        });
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class', 'data-theme', 'theme']
-        });
-        
-        // Method 2: Listen for system color scheme changes (backup)
-        if (window.matchMedia) {
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            darkModeMediaQuery.addEventListener('change', (e) => {
-                // Only apply system preference if no explicit site theme is set
-                if (!document.documentElement.classList.contains('dark') && 
-                    !document.documentElement.classList.contains('light') &&
-                    !document.documentElement.getAttribute('data-theme')) {
-                    switchAllRiveThemes(e.matches);
-                    console.log('System theme changed, Rive themes updated:', e.matches ? 'Dark' : 'Light');
-                }
-            });
-        }
-        
-        // Method 3: Listen for custom theme events (if your site dispatches them)
-        document.addEventListener('themeChanged', (e) => {
-            if (e.detail && typeof e.detail.isDark === 'boolean') {
-                switchAllRiveThemes(e.detail.isDark);
-                console.log('Custom theme event received, Rive themes updated:', e.detail.isDark ? 'Dark' : 'Light');
-            }
+            attributeFilter: ['class']
         });
         
         return observer; // Return observer for cleanup if needed
     }
 
-    // Legacy function for backward compatibility
-    function setupRiveSystemThemeDetection() {
-        return setupRiveSiteThemeSync();
-    }
-
     // Expose functions globally for manual use
     window.createRiveAnimation = createRiveAnimation;
     window.switchRiveThemes = switchAllRiveThemes;
-    window.setupRiveSystemThemeDetection = setupRiveSystemThemeDetection;
     window.setupRiveSiteThemeSync = setupRiveSiteThemeSync;
 })();
