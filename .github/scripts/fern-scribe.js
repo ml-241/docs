@@ -1,12 +1,15 @@
 const { Octokit } = require('@octokit/rest');
+const Turbopuffer = require('@turbopuffer/turbopuffer').default;
 const fs = require('fs').promises;
 const path = require('path');
 
 class FernScribe {
   constructor() {
     this.octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-    this.turbopufferEndpoint = process.env.TURBOPUFFER_ENDPOINT;
-    this.turbopufferApiKey = process.env.TURBOPUFFER_API_KEY;
+    this.turbopuffer = new Turbopuffer({
+      apiKey: process.env.TURBOPUFFER_API_KEY,
+      region: "gcp-us-east4",
+    });
     this.anthropicApiKey = process.env.ANTHROPIC_API_KEY;
     this.slackToken = process.env.SLACK_USER_TOKEN;
     
@@ -303,6 +306,39 @@ class FernScribe {
     }
   }
 
+  reciprocalRankFusion(semanticResults, bm25Results) {
+    const k = 60; // RRF constant
+    const combinedScores = new Map();
+
+    // Add semantic results with RRF scoring
+    semanticResults.forEach((result, index) => {
+      const score = 1 / (k + index + 1);
+      const id = result.id;
+      if (id) {
+        combinedScores.set(id, { result, score });
+      }
+    });
+
+    // Add BM25 results with RRF scoring
+    bm25Results.forEach((result, index) => {
+      const score = 1 / (k + index + 1);
+      const id = result.id;
+      if (id) {
+        const existing = combinedScores.get(id);
+        if (existing) {
+          existing.score += score;
+        } else {
+          combinedScores.set(id, { result, score });
+        }
+      }
+    });
+
+    // Sort by combined score and return results
+    return Array.from(combinedScores.values())
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.result);
+  }
+
   async queryTurbopuffer(query, opts = {}) {
     if (!query || query.trimStart().length === 0) {
       console.log('🔧 Empty query provided to Turbopuffer');
@@ -312,46 +348,69 @@ class FernScribe {
     try {
       console.log('🔧 Querying Turbopuffer with options:', JSON.stringify(opts, null, 2));
       
+      const {
+        namespace,
+        topK = 10,
+        mode = "hybrid",
+        documentIdsToIgnore = [],
+        urlsToIgnore = []
+      } = opts;
+
+      const ns = this.turbopuffer.namespace(namespace);
+
       // Create embedding for the query
-      const embeddingResponse = await this.createEmbedding(query);
-      if (!embeddingResponse) {
+      const vector = await this.createEmbedding(query);
+      if (!vector) {
         console.error('🔧 Failed to create embedding for query');
         return [];
       }
 
-      const requestBody = {
-        query_embedding: embeddingResponse,
-        top_k: opts.topK || 10,
-        namespace: opts.namespace,
-        ...(opts.documentIdsToIgnore && { document_ids_to_ignore: opts.documentIdsToIgnore }),
-        ...(opts.urlsToIgnore && { urls_to_ignore: opts.urlsToIgnore })
-      };
-
-      console.log('🔧 Turbopuffer request body (without embedding):', {
-        ...requestBody,
-        query_embedding: `[${embeddingResponse.length} dimensions]`
-      });
-
-      const response = await fetch(this.turbopufferEndpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.turbopufferApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('🔧 Turbopuffer API error details:', errorText);
-        throw new Error(`Turbopuffer API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('🔧 Turbopuffer response structure:', Object.keys(data));
-      console.log('🔧 Turbopuffer results count:', data.results?.length || 0);
+      // Build filters
+      const documentIdFilters = documentIdsToIgnore.map((id) => ["id", "NotEq", id]);
+      const urlFilters = urlsToIgnore.map((url) => ["url", "NotEq", url]);
       
-      return data.results || [];
+      const allFilters = [...documentIdFilters, ...urlFilters];
+      const queryFilters = allFilters.length > 0 
+        ? (allFilters.length === 1 ? allFilters[0] : ["And", allFilters])
+        : undefined;
+
+      console.log('🔧 Turbopuffer query filters:', queryFilters);
+
+      // Semantic search (vector similarity)
+      const semanticResponse = mode !== "bm25" ? await ns.query({
+        rank_by: ["vector", "ANN", vector],
+        top_k: topK,
+        include_attributes: true,
+        filters: queryFilters,
+      }) : { rows: [] };
+
+      // BM25 search (keyword matching) - search across multiple text fields
+      const bm25Response = mode !== "semantic" && query.length < 1024 ? await ns.query({
+        rank_by: [
+          "Sum",
+          [
+            ["chunk", "BM25", query],
+            ["title", "BM25", query],
+            ["keywords", "BM25", query],
+          ],
+        ],
+        top_k: topK,
+        include_attributes: true,
+        filters: queryFilters,
+      }) : { rows: [] };
+
+      const semanticResults = semanticResponse.rows || [];
+      const bm25Results = bm25Response.rows || [];
+
+      console.log('🔧 Semantic results count:', semanticResults.length);
+      console.log('🔧 BM25 results count:', bm25Results.length);
+
+      // Combine results using reciprocal rank fusion
+      const fusedResults = this.reciprocalRankFusion(semanticResults, bm25Results);
+      
+      console.log('🔧 Fused results count:', fusedResults.length);
+      
+      return fusedResults;
     } catch (error) {
       console.error('🔧 Turbopuffer query failed:', error);
       return [];
@@ -370,7 +429,7 @@ class FernScribe {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'text-embedding-3-small',
+          model: 'text-embedding-3-large',
           input: text
         })
       });
